@@ -2,7 +2,7 @@ University of Central Florida
 Evolutionary Computation Lab
 Author: Aidan Lakshman
 
-I ran this program using Python 3.5
+These scripts were written and interpreted with python3.5
 
 Required python3 packages: pandas, matplotlib, numpy, scipy, python3-pip, ggplot
 
