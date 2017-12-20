@@ -2,6 +2,8 @@ import random
 import math
 from GAindiv import *
 
+UNIFORM_XOVER_P_VAL = 0.2
+
 #selecting members from the population to be parents for the next generation
 def selection(population, points, k, p):
     #k is the tournament size
@@ -87,7 +89,7 @@ def crossover(population, rate):
         '''
 
         #uniform crossover
-        MASK_PROB = 0.2
+        MASK_PROB = UNIFORM_XOVER_P_VAL
         base_mask = '0' * len(genome1)
         mask = ''
         for i in range(len(base_mask)):

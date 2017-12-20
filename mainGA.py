@@ -28,8 +28,8 @@ CROSSOVER_RATE = 0.80 #rate of crossover
 MUTATION_BITS_RATE = 0.01 #rate of mutation
 TOURNAMENT_SIZE = 3 #tournament size
 TOURNAMENT_PROBABILITY = 0.75 #probability most fit individual wins in tournament
-NUM_VALS = 4 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
-             #longest function possible: f(x) = gx^4 + fx^3 + ex^2 + dx + csin(x) + bcos(x) + a, NUM_VALS = 7
+NUM_VALS = 7 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
+             #longest function possible: f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a, NUM_VALS = 7
 
 #this is a counter to hold the total iterations thus far
 #note: this is not a constant, but it is used similarly to the other constants so it goes into the constants list
