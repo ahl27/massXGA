@@ -79,9 +79,10 @@ def main():
     consts = pickle.load(params_file)
     points = pickle.load(params_file)
 
-    # write constants, points, and data from each run to the csv file
+    # write constants, generations, points, and data from each run to the csv file
     with open('logs/{}/{}.csv'.format(todays_date, run_time), 'a') as csv_file:
         csv_file.write(',' + str(consts) + '\n\n')
+        csv_file.write(',' + str(gens) + '\n\n')
         csv_file.write(',' + str(points) + '\n\n')
         for i in range(len(solutions)):
             csv_file.write(',{0:.3f},{1},{2},\n'.format(float(fitnesses[i]), numgens[i], solutions[i]))
