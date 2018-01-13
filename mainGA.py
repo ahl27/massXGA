@@ -10,6 +10,7 @@ from GAindiv import individual
 
 #standard python library imports
 import pickle
+import os
 import math
 import argparse
 import tkinter as tk
@@ -213,6 +214,17 @@ def run_subprocess_version(fname):
     global TOTAL_GENS
 
     points = pickle.load(open(fname, 'rb'))
+
+    # open the logging pickle file if it exists and has 0 length
+    # the 0 length check ensures these dumps are not repeated for each call to this function
+    # constants and points are written to the file
+    if os.path.exists('params.pickle'):
+        if os.path.getsize('params.pickle') == 0:
+            params_file = open('params.pickle', 'wb')
+            pickle.dump(constants, params_file)
+            pickle.dump(points, params_file)
+            params_file.close()
+
     population = []
 
     for i in range(CONST_POPSIZE):
@@ -222,6 +234,12 @@ def run_subprocess_version(fname):
 
         member = individual(memberVals)
         population.append(member)
+
+        # solutions is the set of solutions seen
+        # put genomes in the set so that we can count unique genomes seen
+        solutions = set()
+        for memb in population:
+            solutions.add(tuple(memb.values))
 
     population.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
     bestFitness = population[0].calculate_fitness(points)
@@ -236,8 +254,13 @@ def run_subprocess_version(fname):
         bestFitness = newBestFit
         TOTAL_GENS += 1
 
+        # add new genomes from this generation to the set
+        for memb in population:
+            solutions.add(tuple(memb.values))
+
     print(bestFitness)
     print(LAST_CHANGE)
+    print(len(solutions))
     print("Process Finished")
 
 
@@ -302,6 +325,11 @@ def main():
             #adding member to the population
             population.append(member)
 
+        # solutions is the set of solutions seen
+        # put genomes in the set so that we can count unique genomes seen
+        solutions = set()
+        for memb in population:
+            solutions.add(tuple(memb.values))
 
         #sort by fitness score
         population.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
@@ -386,9 +414,15 @@ def main():
                     print("Function optimized after " + str(TOTAL_GENS) + " generations.\n\n")
                     break
                 population, newBestFit = iterate(population, points, bestFitness)
+
+                # add new genomes from this generation to the set
+                for memb in population:
+                    solutions.add(tuple(memb.values))
+
                 bestFitness = newBestFit
                 TOTAL_GENS += 1
             GAgraphing.graph_pop(points, population)
+            print("Number of solutions seen: {0}".format(len(solutions)))
 
 
     #gives users one last chance to save
