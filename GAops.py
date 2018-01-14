@@ -5,10 +5,11 @@ from GAindiv import *
 UNIFORM_XOVER_P_VAL = 0.2
 
 #selecting members from the population to be parents for the next generation
-def selection(population, points, k, p):
+def selection(population, points, k, p, size=-1):
     #k is the tournament size
     #p is the probability that the highest fitness individual will be selected
-    size = len(population)
+    if size == -1:
+    	size = len(population)
     newPopulation = []
 
     newPopulation.append(individual(population[0].get_value_list()))

@@ -6,7 +6,9 @@
 #supporting module imports
 import GAops
 import GAgraphing
+import extinction
 from GAindiv import individual
+
 
 #standard python library imports
 import pickle
@@ -29,8 +31,14 @@ CROSSOVER_RATE = 0.80 #rate of crossover
 MUTATION_BITS_RATE = 0.01 #rate of mutation
 TOURNAMENT_SIZE = 3 #tournament size
 TOURNAMENT_PROBABILITY = 0.75 #probability most fit individual wins in tournament
-NUM_VALS = 7 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
+NUM_VALS = 6 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
              #longest function possible: f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a, NUM_VALS = 7
+
+EXTINCT_PERCENT = 0.50 #expressed as a decimal, 0.50 = 50% will die
+EXTINCT_INTERVAL = 10 #generations between each extinction, so every 10 generations it'll trigger an event
+REPOP_RATE = 1 #number of steps to take to repopulate, for gradual repopulation
+ALTPARAMS = [] #alternate parameters for adaptive repopulation. Parameters given in this order:
+               #tourn_size, tourn_rate, crossover_rate, mutation_rate
 
 #this is a counter to hold the total iterations thus far
 #note: this is not a constant, but it is used similarly to the other constants so it goes into the constants list
@@ -46,6 +54,9 @@ LAST_CHANGE = 0
 #counter reporting the number of mutations per generation
 num_mutations = 0
 
+
+def get_rates():
+    return [TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, CROSSOVER_RATE, TOURNAMENT_SIZE, TOTAL_GENS]
 
 #Function to initialize the points to fit a line to
 #Inputs: 
@@ -116,6 +127,11 @@ def iterate(population, points, bestFit, subproc=False):
     #mutation
     num_mutations = 0
     num_mutations += GAops.mutate_bits(newPop, MUTATION_BITS_RATE)
+
+    #extinction
+    newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS, 
+        EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
+
 
     #sorting population by fitness (best to worst)
     newPop.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
@@ -336,12 +352,21 @@ def main():
 
     #printing out the function to be optimized
     #gx^4 + fx^3 + ex^2 + dx + csin(x) + bcos(x) + a
+    '''
     fxnVals = ['gx^4', 'fx^3', 'ex^2', 'dx', 'csin(x)', 'bcos(x)', 'a']
     function = ''
     for i in range(len(fxnVals)):
         if (i + NUM_VALS) >= len(fxnVals):
             function += ' + ' + fxnVals[i]
     function = function[3:] #(removes the ' + ' at the front of the string)
+    '''
+
+    if NUM_VALS == 6:
+        function = 'f(x) = dx + csin(fx) + bcos(ex) + a'
+    elif NUM_VALS == 7:
+        function = 'f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a'
+    else:
+        function = 'Check source code'
 
     #printing initial data
     print("\n")
