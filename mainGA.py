@@ -31,12 +31,12 @@ CROSSOVER_RATE = 0.80 #rate of crossover
 MUTATION_BITS_RATE = 0.01 #rate of mutation
 TOURNAMENT_SIZE = 3 #tournament size
 TOURNAMENT_PROBABILITY = 0.75 #probability most fit individual wins in tournament
-NUM_VALS = 6 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
+NUM_VALS = 7 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
              #longest function possible: f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a, NUM_VALS = 7
 
 EXTINCT_PERCENT = 0.50 #expressed as a decimal, 0.50 = 50% will die
-EXTINCT_INTERVAL = 10 #generations between each extinction, so every 10 generations it'll trigger an event
-REPOP_RATE = 1 #number of steps to take to repopulate, for gradual repopulation
+EXTINCT_INTERVAL = 20 #generations between each extinction, so every 10 generations it'll trigger an event
+REPOP_RATE = 10 #number of steps to take to repopulate, for gradual repopulation
 ALTPARAMS = [] #alternate parameters for adaptive repopulation. Parameters given in this order:
                #tourn_size, tourn_rate, crossover_rate, mutation_rate
 
@@ -46,7 +46,7 @@ TOTAL_GENS = 0
 constants = [CONST_POPSIZE, CONST_BITS, CONST_RANDPERGEN, CONST_NUM_POINTS,
                 CROSSOVER_RATE, MUTATION_BITS_RATE, 
                 TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, NUM_VALS,
-                TOTAL_GENS]
+                TOTAL_GENS, EXTINCT_PERCENT, EXTINCT_INTERVAL, REPOP_RATE, ALTPARAMS]
 
 LAST_CHANGE = 0
 
@@ -241,6 +241,10 @@ def run_subprocess_version(fname):
             pickle.dump(points, params_file)
             params_file.close()
 
+    # file to store the set of unique solutions
+    # in ezResearch, this information is written to a text file
+    solns_file = open('solns.pickle', 'wb')
+
     population = []
 
     for i in range(CONST_POPSIZE):
@@ -273,6 +277,11 @@ def run_subprocess_version(fname):
         # add new genomes from this generation to the set
         for memb in population:
             solutions.add(tuple(memb.values))
+
+    # write the set of unique solutions to the pickle file
+    #  this is unpickled and processed in ezResearch
+    pickle.dump(solutions, solns_file)
+    solns_file.close()
 
     print(bestFitness)
     print(LAST_CHANGE)

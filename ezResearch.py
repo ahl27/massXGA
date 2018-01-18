@@ -45,6 +45,9 @@ def main():
         os.makedirs('logs')
     if not os.path.exists('logs/{}'.format(todays_date)):
         os.makedirs('logs/{}'.format(todays_date))
+    if not os.path.exists('logs/{}/{}'.format(todays_date, run_time)):
+        os.makedirs('logs/{}/{}'.format(todays_date, run_time))
+
 
 
     command = "python3 mainGA.py --subprocess -p " + fname
@@ -72,6 +75,21 @@ def main():
         numgens.append(data[2])
         fitnesses.append(float(data[1]))
         solutions.append(int(data[3]))
+
+        # read unique solutions from pickle file created in mainGA
+        solns_file = open('solns.pickle', 'rb')
+        solution_set = pickle.load(solns_file)
+        solns_file.close()
+        os.remove('solns.pickle')
+
+        # create text file to store all unique solutions for this run
+        run_file = open('logs/{}/{}/{}.txt'.format(todays_date, run_time, 'Run' + str(i)), 'w')
+        for soln in solution_set:
+            for i in soln:
+                run_file.write(str(float(int(i, 2))))
+                run_file.write('  ')
+            run_file.write('\n')
+        run_file.close()
 
     # open the logging pickle file for reading
     # read the constants and points
