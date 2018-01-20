@@ -35,6 +35,7 @@ def main():
     parser.add_argument('-cp', '--cosperiod', default=1, type=int, help='value of "a" in f(x) = cos(ax)')
     parser.add_argument('-start', '--startval', default=-50, type=int, help='x value of first point to generate. Default: -50')
     parser.add_argument('-end', '--endval', default=50, type=int, help='x value of last point to generate. Default: 50')
+    parser.add_argument('-r', '--random', default=False, type=bool, help='enable for semi-random data')
 
     #reading in commandline args
     args = parser.parse_args()
@@ -46,6 +47,7 @@ def main():
     cur = args.startval
     max_val = args.endval
     points = []
+    rand = args.random
 
     if slopes is None:
         slopes = []
@@ -151,6 +153,10 @@ def main():
                     points.append((x,y))
 
 
+    #implement randomness
+    if rand:
+        points = randomize(points)
+
     #generate filename
     fname = './points/'
     
@@ -165,14 +171,44 @@ def main():
             fname2 += 'sp' + str(sp) + '_'
         if cp != 1:
             fname2 += 'cp' + str(cp) + '_'
+        if rand:
+            fname2 += 'rand_'
 
         fname2 = fname2[:-1]
         fname = fname + fname2
 
+
     pickle.dump(points, open(fname + '.pickle', 'wb'))
 
             
+def randomize(critPoints):
+    #this function generates the critical points of the graph, 
+    #then stochastically adds in more points between the critical points
 
+    points = []
+
+    #randomly determine points between the critical points
+    for i in range(len(critPoints) - 1):
+        points.append(critPoints[i])
+        p1 = critPoints[i]
+        p2 = critPoints[i+1]
+
+        #make sure we assign the smaller coordinates to x1,y1 so we generate one between x1/y1 and x2/y2
+        x1 = p1[0] if p1[0] <= p2[0] else p2[0]
+        x2 = p1[0] if p1[0] >= p2[0] else p2[0]
+        y1 = p1[1] if p1[1] <= p2[1] else p2[1]
+        y2 = p1[1] if p1[1] >= p2[1] else p2[1]
+        for j in range(CONST_NUM_POINTS):
+            #this will generate a integer number between x1 and x2 (or y1/y2)
+            newX = random.randint(x1, x2) + random.random()
+            newY = random.randint(y1, y2) + random.random()
+            points.append((newX, newY))
+
+    points.append(critPoints[-1])
+
+    #sort points in the list by x value
+    points.sort(key = lambda point: point[0])
+    return points
 
 
 
