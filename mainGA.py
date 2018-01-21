@@ -453,6 +453,8 @@ def main():
                 for memb in population:
                     solutions.add(tuple(memb.values))
 
+                #pickle.dump(solutions, open("testsolutions.pickle", 'wb'))
+
                 bestFitness = newBestFit
                 TOTAL_GENS += 1
             GAgraphing.graph_pop(points, population)
