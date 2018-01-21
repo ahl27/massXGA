@@ -3,6 +3,7 @@ import argparse
 import sys
 import pickle
 import numpy as np
+from scipy import stats
 from datetime import datetime
 from time import time
 import os
@@ -72,24 +73,25 @@ def main():
             gensNear.append(int(data[2]))
         if float(data[1]) == 0.:
             gensSuccess.append(int(data[2]))
-        numgens.append(data[2])
+        numgens.append(int(data[2]))
         fitnesses.append(float(data[1]))
         solutions.append(int(data[3]))
 
         # read unique solutions from pickle file created in mainGA
-        solns_file = open('solns.pickle', 'rb')
-        solution_set = pickle.load(solns_file)
-        solns_file.close()
-        os.remove('solns.pickle')
+        os.rename('solns.pickle', 'logs/{}/{}/{}.pickle'.format(todays_date, run_time, 'Run' + str(i)))
+        # solns_file = open('solns.pickle', 'rb')
+        # solution_set = pickle.load(solns_file)
+        # solns_file.close()
+        # os.remove('solns.pickle')
 
         # create text file to store all unique solutions for this run
-        run_file = open('logs/{}/{}/{}.txt'.format(todays_date, run_time, 'Run' + str(i)), 'w')
-        for soln in solution_set:
-            for i in soln:
-                run_file.write(str(float(int(i, 2))))
-                run_file.write('  ')
-            run_file.write('\n')
-        run_file.close()
+        # run_file = open('logs/{}/{}/{}.txt'.format(todays_date, run_time, 'Run' + str(i)), 'w')
+        # for soln in solution_set:
+        #     for i in soln:
+        #         run_file.write(str(float(int(i, 2))))
+        #         run_file.write('  ')
+        #     run_file.write('\n')
+        # run_file.close()
 
     # open the logging pickle file for reading
     # read the constants and points
@@ -97,11 +99,18 @@ def main():
     consts = pickle.load(params_file)
     points = pickle.load(params_file)
 
+    avg_fit = np.mean(fitnesses)
+    avg_gens = np.mean(numgens)
+    avg_solns = np.mean(solutions)
+    trim_avg_fit = stats.trim_mean(fitnesses, 0.05, axis=None)
+
     # write constants, generations, points, and data from each run to the csv file
     with open('logs/{}/{}.csv'.format(todays_date, run_time), 'a') as csv_file:
+        csv_file.write(', Points file: ' + fname + '\n\n')
         csv_file.write(',' + str(consts) + '\n\n')
         csv_file.write(',' + str(gens) + '\n\n')
-        csv_file.write(',' + str(points) + '\n\n')
+        # csv_file.write(',' + str(points) + '\n\n')
+        csv_file.write(', Avg fitness: {}  Trim fit: {}  Avg gens: {}  Avg solns: {}\n\n'.format(avg_fit, trim_avg_fit, avg_gens, avg_solns))
         for i in range(len(solutions)):
             csv_file.write(',{0:.3f},{1},{2},\n'.format(float(fitnesses[i]), numgens[i], solutions[i]))
 
@@ -115,11 +124,12 @@ def main():
     else:
         avgSuccess = "No perfect successes" 
 
-    avgFitness = fitnesses = reduce(lambda x, y: x + y, fitnesses) / float(len(fitnesses))
-    avgSolutions = np.mean(solutions)
+    # avgFitness = fitnesses = reduce(lambda x, y: x + y, fitnesses) / float(len(fitnesses))
+    # avgSolutions = np.mean(solutions)
 
-    print("\n\nAverage fitness across all iterations: " + str(avgFitness))
-    print("\nAverage number of unique solutions: " + str(avgSolutions))
+    print("\n\nAverage fitness across all iterations: " + str(avg_fit))
+    print("\nAverage generations across all iterations: " + str(avg_gens))
+    print("\nAverage number of unique solutions: " + str(avg_solns))
     print("\nNear success rate: " + str((len(gensNear) / iterations) * 100) + "%")
     print("Average generations for near success: " + str(avgNear))
     print("\nPerfect optimization rate: " + str((len(gensSuccess) / iterations) * 100) + "%")
