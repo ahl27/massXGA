@@ -36,10 +36,6 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
     #picking better names for some key variables
     total_members = len(population)    
     num_to_remove = int(total_members * percent_to_kill)
-    tourn_size = params[0]
-    tourn_rate = params[1]
-    x_rate = params[2]
-    mute_rate = params[3]
 
     #this list will hold the change in each parameter per generation
     change = []
@@ -85,7 +81,7 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         GAops.mutate_bits(new_pop, altparams[3])
 
         for i in range(4):
-            altparams[i] + change[i]
+            altparams[i] += change[i]
 
 
     return new_pop
