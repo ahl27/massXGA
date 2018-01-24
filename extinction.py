@@ -46,8 +46,10 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         altparams.append(params[len(change)])
         change.append(0)
 
-
-
+    #print(params)
+    #print(altparams)
+    #print(change)
+    #print(gens_to_repop)
 
     #random.sample(range(max), k) returns a list of k unique numbers between 0 and max
     indexes_to_remove = random.sample(range(total_members), num_to_remove)
@@ -67,12 +69,14 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
 
     #this handles gradual repopulation
     for i in range(gens_to_repop):
+        #print(altparams)
+
         #selection
         if i == gens_to_repop - 1:
             #this line resolves rounding errors by setting the total size to total_members on the last iteration
-            new_pop = GAops.selection(population, points, altparams[0], altparams[1], size=total_members) 
+            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=total_members) 
         else:   
-            new_pop = GAops.selection(population, points, altparams[0], altparams[1], size=len(new_pop) + add_per_gen)
+            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=len(new_pop) + add_per_gen)
     
         #crossover
         GAops.crossover(new_pop, altparams[2])
@@ -82,6 +86,7 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
 
         for i in range(4):
             altparams[i] += change[i]
+        
 
 
     return new_pop

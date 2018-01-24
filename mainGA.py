@@ -31,13 +31,13 @@ CROSSOVER_RATE = 0.80 #rate of crossover
 MUTATION_BITS_RATE = 0.01 #rate of mutation
 TOURNAMENT_SIZE = 3 #tournament size
 TOURNAMENT_PROBABILITY = 0.75 #probability most fit individual wins in tournament
-NUM_VALS = 7 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
+NUM_VALS = 6 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
              #longest function possible: f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a, NUM_VALS = 7
 
 EXTINCT_PERCENT = 0.50 #expressed as a decimal, 0.50 = 50% will die
-EXTINCT_INTERVAL = 0 #generations between each extinction, so every 10 generations it'll trigger an event
-REPOP_RATE = 20 #number of steps to take to repopulate, for gradual repopulation
-ALTPARAMS = [] #alternate parameters for adaptive repopulation. Parameters given in this order:
+EXTINCT_INTERVAL = 10 #generations between each extinction, so every 10 generations it'll trigger an event
+REPOP_RATE = 10 #number of steps to take to repopulate, for gradual repopulation
+ALTPARAMS = [6, 0.5, 0.95, 0.1]#[] #alternate parameters for adaptive repopulation. Parameters given in this order:
                #tourn_size, tourn_rate, crossover_rate, mutation_rate
 
 #this is a counter to hold the total iterations thus far
@@ -56,7 +56,7 @@ num_mutations = 0
 
 
 def get_rates():
-    return [TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, CROSSOVER_RATE, TOURNAMENT_SIZE, TOTAL_GENS]
+    return [TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, CROSSOVER_RATE, MUTATION_BITS_RATE, TOTAL_GENS]
 
 #Function to initialize the points to fit a line to
 #Inputs: 

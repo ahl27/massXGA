@@ -10,6 +10,7 @@ def selection(population, points, k, p, size=-1):
     #p is the probability that the highest fitness individual will be selected
     if size == -1:
     	size = len(population)
+
     newPopulation = []
 
     newPopulation.append(individual(population[0].get_value_list()))
