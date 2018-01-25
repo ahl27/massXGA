@@ -22,8 +22,17 @@ def main():
     iterations = args.iterations
     gens = args.generations
 
+    # List of sets of settings to use for multiple runs.  Empty string uses values defined in mainGA
+    # Each string contains 6 values:
+    #       NUM_VALS
+    #       EXTINCT_PERCENT
+    #       EXTINCT_INTERVAL
+    #       EXTINCT_LIST
+    #       REPOP_RATE
+    #       ALTPARAMS
     run_settings = ["6 0.50 20 '[5, 15, 25]' 5 '[]'", "6 0.75 20 '[5, 15, 25]' 5 '[]'"]
 
+    # make a call to mainGA.py for each set of settings above
     for settings in run_settings:
         print (settings)
         gensNear = []
@@ -53,7 +62,7 @@ def main():
         if not os.path.exists('logs/{}/{}'.format(todays_date, run_time)):
             os.makedirs('logs/{}/{}'.format(todays_date, run_time))
 
-
+        # -s flag is for the settings being sent -- see above
         command = "python3 mainGA.py --subprocess -p " + fname + " -s " + settings
         for i in range(iterations):
             process = pexpect.spawn(command)

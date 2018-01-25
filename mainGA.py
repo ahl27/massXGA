@@ -323,29 +323,25 @@ def main():
     use_checkpoint = args.checkpoint
     cmdpoints = args.points
     checkpoint = False
-    # consts = literal_eval(args.settings)
+    # these are the settings for NUM_VALS, EXTINCT_PERCENT, EXTINCT_INTERVAL, EXTINCT_LIST, REPOP_RATE, ALTPARAMS
     consts = args.settings
     subproc = args.subprocess
 
+    # assign the constant value here if string passed in has non-zero length
+    # otherwise use the values defined at the top of this file
     if len(consts) > 0:
         global NUM_VALS
         NUM_VALS = int(consts[0])
-        # print (NUM_VALS)
         global EXTINCT_PERCENT
         EXTINCT_PERCENT = literal_eval(consts[1])
-        # print (EXTINCT_PERCENT)
         global EXTINCT_INTERVAL
         EXTINCT_INTERVAL = int(consts[2])
-        # print (EXTINCT_INTERVAL)
         global EXTINCT_LIST
         EXTINCT_LIST = literal_eval(consts[3])
-        # print (EXTINCT_LIST)
         global REPOP_RATE
         REPOP_RATE = int(consts[4])
-        # print (REPOP_RATE)
         global ALTPARAMS
         ALTPARAMS = literal_eval(consts[5])
-        # print (ALTPARAMS)
 
     #preparing the screen to show messagebox/filedialog
     root = tk.Tk()
