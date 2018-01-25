@@ -19,6 +19,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 import random
+from ast import literal_eval
 random.seed()
 
 #Global Variables / Constants
@@ -34,17 +35,19 @@ TOURNAMENT_PROBABILITY = 0.75 #probability most fit individual wins in tournamen
 NUM_VALS = 7 #determines the function--1 means just a, 2 means a,b, 3 means a,b,c, etc.
              #longest function possible: f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a, NUM_VALS = 7
 
-EXTINCT_PERCENT = 0.50 #expressed as a decimal, 0.50 = 50% will die
-EXTINCT_INTERVAL = 0 #generations between each extinction, so every 10 generations it'll trigger an event
-REPOP_RATE = 20 #number of steps to take to repopulate, for gradual repopulation
+EXTINCT_PERCENT = 0.5 #expressed as a decimal, 0.50 = 50% will die
+EXTINCT_INTERVAL = 50 #generations between each extinction, so every 10 generations it'll trigger an event
+EXTINCT_LIST = [10, 25, 50]
+REPOP_RATE = 1 #number of steps to take to repopulate, for gradual repopulation
 ALTPARAMS = [] #alternate parameters for adaptive repopulation. Parameters given in this order:
                #tourn_size, tourn_rate, crossover_rate, mutation_rate
 
 #this is a counter to hold the total iterations thus far
 #note: this is not a constant, but it is used similarly to the other constants so it goes into the constants list
 TOTAL_GENS = 0
+
 constants = [CONST_POPSIZE, CONST_BITS, CONST_RANDPERGEN, CONST_NUM_POINTS,
-                CROSSOVER_RATE, MUTATION_BITS_RATE, 
+                CROSSOVER_RATE, MUTATION_BITS_RATE,
                 TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, NUM_VALS,
                 TOTAL_GENS, EXTINCT_PERCENT, EXTINCT_INTERVAL, REPOP_RATE, ALTPARAMS]
 
@@ -56,7 +59,7 @@ num_mutations = 0
 
 
 def get_rates():
-    return [TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, CROSSOVER_RATE, TOURNAMENT_SIZE, TOTAL_GENS]
+    return [TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, CROSSOVER_RATE, MUTATION_BITS_RATE, TOTAL_GENS]
 
 #Function to initialize the points to fit a line to
 #Inputs: 
@@ -114,9 +117,11 @@ Outputs:
     -newPop: new population after GA operations
     -bestFit: new best fitness
 '''
-def iterate(population, points, bestFit, subproc=False):
+def iterate(population, points, bestFit, subproc=False, ext_index=0):
     global num_mutations
     global LAST_CHANGE
+
+    # print(NUM_VALS, EXTINCT_PERCENT, EXTINCT_INTERVAL, EXTINCT_LIST, REPOP_RATE, ALTPARAMS)
 
     #selection
     newPop = GAops.selection(population, points, TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY)
@@ -129,9 +134,10 @@ def iterate(population, points, bestFit, subproc=False):
     num_mutations += GAops.mutate_bits(newPop, MUTATION_BITS_RATE)
 
     #extinction
-    newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS, 
-        EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
-
+    # newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
+    #     EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
+    newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
+            EXTINCT_LIST[ext_index], gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
 
     #sorting population by fitness (best to worst)
     newPop.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
@@ -229,6 +235,13 @@ def run_subprocess_version(fname):
     global LAST_CHANGE
     global TOTAL_GENS
 
+    const_params = [CONST_POPSIZE, CONST_BITS, CONST_RANDPERGEN, CONST_NUM_POINTS,
+                 CROSSOVER_RATE, MUTATION_BITS_RATE,
+                 TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, NUM_VALS,
+                 TOTAL_GENS, EXTINCT_PERCENT, EXTINCT_INTERVAL, REPOP_RATE, ALTPARAMS]
+
+    extinction_index = 0
+
     points = pickle.load(open(fname, 'rb'))
 
     # open the logging pickle file if it exists and has 0 length
@@ -237,7 +250,7 @@ def run_subprocess_version(fname):
     if os.path.exists('params.pickle'):
         if os.path.getsize('params.pickle') == 0:
             params_file = open('params.pickle', 'wb')
-            pickle.dump(constants, params_file)
+            pickle.dump(const_params, params_file)
             pickle.dump(points, params_file)
             params_file.close()
 
@@ -270,7 +283,9 @@ def run_subprocess_version(fname):
     for i in range(numGens):
         if bestFitness == 0.0:
             break
-        population, newBestFit = iterate(population, points, bestFitness, True)
+        if (extinction_index < len(EXTINCT_LIST) - 1) and (i == EXTINCT_LIST[extinction_index + 1]):
+            extinction_index += 1
+        population, newBestFit = iterate(population, points, bestFitness, True, ext_index=extinction_index)
         bestFitness = newBestFit
         TOTAL_GENS += 1
 
@@ -300,13 +315,37 @@ def main():
         help="[Flag] Continue from existing checkpoint", action="store_true")
     parser.add_argument("-p", "--points", 
         help="[String] Read in pickle file containing set of points", default='')
+    parser.add_argument("-s", "--settings", nargs=6,
+        help="[List] Possibly empty list of settings for global constant values", default=[])
     parser.add_argument("--subprocess", action="store_true",
         help="Do not use. For use with scripts calling this as a subscript.")
     args = parser.parse_args()
     use_checkpoint = args.checkpoint
     cmdpoints = args.points
     checkpoint = False
+    # consts = literal_eval(args.settings)
+    consts = args.settings
     subproc = args.subprocess
+
+    if len(consts) > 0:
+        global NUM_VALS
+        NUM_VALS = int(consts[0])
+        # print (NUM_VALS)
+        global EXTINCT_PERCENT
+        EXTINCT_PERCENT = literal_eval(consts[1])
+        # print (EXTINCT_PERCENT)
+        global EXTINCT_INTERVAL
+        EXTINCT_INTERVAL = int(consts[2])
+        # print (EXTINCT_INTERVAL)
+        global EXTINCT_LIST
+        EXTINCT_LIST = literal_eval(consts[3])
+        # print (EXTINCT_LIST)
+        global REPOP_RATE
+        REPOP_RATE = int(consts[4])
+        # print (REPOP_RATE)
+        global ALTPARAMS
+        ALTPARAMS = literal_eval(consts[5])
+        # print (ALTPARAMS)
 
     #preparing the screen to show messagebox/filedialog
     root = tk.Tk()

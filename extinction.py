@@ -1,7 +1,7 @@
 import random
 import GAops
 from GAindiv import individual
-from mainGA import get_rates
+from mainGA import get_rates, CONST_BITS, NUM_VALS
 
 '''
 Mass extinction with no change to the parameters
@@ -62,6 +62,16 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         if i not in indexes_to_remove:
             new_pop.append(individual(population[i].get_value_list()))
 
+    for i in range(5):
+        #these are two's complement bit strings
+        memberVals = [''.join(random.choice(['0', '1'])
+                        for j in range(CONST_BITS))
+                        for k in range(NUM_VALS)]
+
+        member = individual(memberVals)
+        #adding member to the population
+        new_pop.append(member)
+
 
     #at this point we've killed off a percentage of the population, so len(new_pop) < len(population)
     #now we have to repopulate
@@ -74,9 +84,9 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         #selection
         if i == gens_to_repop - 1:
             #this line resolves rounding errors by setting the total size to total_members on the last iteration
-            new_pop = GAops.selection(population, points, altparams[0], altparams[1], size=total_members) 
+            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=total_members)
         else:   
-            new_pop = GAops.selection(population, points, altparams[0], altparams[1], size=len(new_pop) + add_per_gen)
+            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=len(new_pop) + add_per_gen)
     
         #crossover
         GAops.crossover(new_pop, altparams[2])
@@ -85,7 +95,7 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         GAops.mutate_bits(new_pop, altparams[3])
 
         for i in range(4):
-            altparams[i] + change[i]
+            altparams[i] += change[i]
 
 
     return new_pop
