@@ -74,15 +74,19 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         #selection
         if i == gens_to_repop - 1:
             #this line resolves rounding errors by setting the total size to total_members on the last iteration
-            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=total_members) 
+            children = GAops.selection(new_pop, points, int(altparams[0]), altparams[1], size=total_members - len(new_pop)) 
         else:   
-            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=len(new_pop) + add_per_gen)
+            children = GAops.selection(new_pop, points, int(altparams[0]), altparams[1], size=add_per_gen)
     
         #crossover
-        GAops.crossover(new_pop, altparams[2])
+        GAops.crossover(children, altparams[2])
 
         #mutation
-        GAops.mutate_bits(new_pop, altparams[3])
+        GAops.mutate_bits(children, altparams[3])
+
+        #adding new members to the population
+        for indiv in children:
+            new_pop.append(individual(indiv.get_value_list()))
 
         for i in range(4):
             altparams[i] += change[i]

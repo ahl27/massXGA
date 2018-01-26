@@ -35,9 +35,9 @@ NUM_VALS = 6 #determines the function--1 means just a, 2 means a,b, 3 means a,b,
              #longest function possible: f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a, NUM_VALS = 7
 
 EXTINCT_PERCENT = 0.50 #expressed as a decimal, 0.50 = 50% will die
-EXTINCT_INTERVAL = 10 #generations between each extinction, so every 10 generations it'll trigger an event
+EXTINCT_INTERVAL = 0 #generations between each extinction, so every 10 generations it'll trigger an event
 REPOP_RATE = 10 #number of steps to take to repopulate, for gradual repopulation
-ALTPARAMS = [6, 0.5, 0.95, 0.1]#[] #alternate parameters for adaptive repopulation. Parameters given in this order:
+ALTPARAMS = []#[6, 0.5, 0.95, 0.1] #alternate parameters for adaptive repopulation. Parameters given in this order:
                #tourn_size, tourn_rate, crossover_rate, mutation_rate
 
 #this is a counter to hold the total iterations thus far
