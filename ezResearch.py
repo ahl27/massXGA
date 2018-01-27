@@ -30,7 +30,16 @@ def main():
     #       EXTINCT_LIST
     #       REPOP_RATE
     #       ALTPARAMS
-    run_settings = ["6 0.50 20 '[5, 15, 25]' 5 '[]'", "6 0.75 20 '[5, 15, 25]' 5 '[]'"]
+    run_settings = ["7 0.50 0 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 1 '[]'","7 0.50 5 '[5, 15, 25]' 5 '[]'",
+                    "7 0.50 10 '[5, 15, 25]' 1 '[]'", "7 0.50 10 '[5, 15, 25]' 5 '[]'", "7 0.50 10 '[5, 15, 25]' 10 '[]'",
+                    "7 0.50 20 '[5, 15, 25]' 1 '[]'", "7 0.50 20 '[5, 15, 25]' 10 '[]'", "7 0.50 20 '[5, 15, 25]' 20 '[]'",
+                    "7 0.50 50 '[5, 15, 25]' 1 '[]'", "7 0.50 50 '[5, 15, 25]' 10 '[]'", "7 0.50 50 '[5, 15, 25]' 20 '[]'",
+                    "7 0.50 50 '[5, 15, 25]' 50 '[]'", "7 0.25 5 '[5, 15, 25]' 1 '[]'","7 0.25 5 '[5, 15, 25]' 5 '[]'",
+                    "7 0.25 10 '[5, 15, 25]' 1 '[]'", "7 0.25 10 '[5, 15, 25]' 5 '[]'", "7 0.25 10 '[5, 15, 25]' 10 '[]'",
+                    "7 0.25 20 '[5, 15, 25]' 1 '[]'", "7 0.25 20 '[5, 15, 25]' 10 '[]'", "7 0.25 20 '[5, 15, 25]' 20 '[]'",
+                    "7 0.25 50 '[5, 15, 25]' 1 '[]'", "7 0.25 50 '[5, 15, 25]' 10 '[]'", "7 0.25 50 '[5, 15, 25]' 20 '[]'",
+                    "7 0.25 50 '[5, 15, 25]' 50 '[]'"]
+    # run_settings = [""]
 
     # make a call to mainGA.py for each set of settings above
     for settings in run_settings:
@@ -40,6 +49,7 @@ def main():
         numgens = []
         fitnesses = []
         solutions = []
+        indivs = []
 
         todays_date = datetime.fromtimestamp(time()).strftime('%Y-%m-%d')
         run_time = datetime.fromtimestamp(time()).strftime('%H-%M-%S')
@@ -63,14 +73,18 @@ def main():
             os.makedirs('logs/{}/{}'.format(todays_date, run_time))
 
         # -s flag is for the settings being sent -- see above
-        command = "python3 mainGA.py --subprocess -p " + fname + " -s " + settings
+        if len(settings) > 0:
+            command = "python3 mainGA.py --subprocess -p " + fname + " -s " + settings
+        else:
+            command = "python3 mainGA.py --subprocess -p " + fname
+
         for i in range(iterations):
             process = pexpect.spawn(command)
             process.expect("Enter the number of generations to iterate through: ")
             process.sendline(gens)
             #process.expect("Enter the number of generations to iterate through: ")
             #process.sendline("quit")
-            process.expect("Process Finished")
+            process.expect("Process Finished", timeout=120)
             data = (process.before).decode(sys.stdout.encoding)
             data = data.split()
 
@@ -79,6 +93,7 @@ def main():
                 print("Best fitness: 0.0 [Perfect!]")
             else:
                 print("Best fitness: " + data[1])
+            print("Best member: " + data[4])
             print("Generations to produce: " + data[2])
             print("Number of unique solutions: " + data[3])
             if float(data[1]) <= 5.:
@@ -88,6 +103,7 @@ def main():
             numgens.append(int(data[2]))
             fitnesses.append(float(data[1]))
             solutions.append(int(data[3]))
+            indivs.append(data[4])
 
             # read unique solutions from pickle file created in mainGA
             os.rename('solns.pickle', 'logs/{}/{}/{}.pickle'.format(todays_date, run_time, 'Run' + str(i)))
@@ -124,7 +140,7 @@ def main():
             # csv_file.write(',' + str(points) + '\n\n')
             csv_file.write(', Avg fitness: {}  Trim fit: {}  Avg gens: {}  Avg solns: {}\n\n'.format(avg_fit, trim_avg_fit, avg_gens, avg_solns))
             for i in range(len(solutions)):
-                csv_file.write(',{0:.3f},{1},{2},\n'.format(float(fitnesses[i]), numgens[i], solutions[i]))
+                csv_file.write(',{0:.3f},{1},{2},{3}\n'.format(float(fitnesses[i]), numgens[i], solutions[i], indivs[i]))
 
         if len(gensNear) > 0:
             avgNear = reduce(lambda x, y: x + y, gensNear) / float(len(gensNear))

@@ -3,6 +3,9 @@ import argparse
 import math
 import re
 import random
+from ast import literal_eval
+
+
 random.seed()
 
 def get_y(dct, x, sp, cp):
@@ -115,9 +118,10 @@ def main():
             #then splits it into a list of integers
             data = ((re.sub(r' *, *|[)] *[(]|[()]', ' ', data)).strip()).split()
 
+            print(len(data))
             #add points to the points list
-            for i in range(len(data))/2:
-                points.append((int(data[2*i]), int(data[2*i+1])))
+            for i in range(int(len(data)/2)):
+                points.append((int(literal_eval(data[2*i])), int(literal_eval(data[2*i+1]))))
 
         else:
             print('Enter space separated numbers corresponding to the x and y values of each point.')
