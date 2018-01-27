@@ -26,18 +26,12 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
     if total_gens%interval != 0 or total_gens == 0:
         return population
 
-
-
     # this will get the normal parameters from mainGA.py
     params = get_rates()
 
     # picking better names for some key variables
     total_members = len(population)    
     num_to_remove = int(total_members * percent_to_kill)
-    tourn_size = params[0]
-    tourn_rate = params[1]
-    x_rate = params[2]
-    mute_rate = params[3]
 
     # this list will hold the change in each parameter per generation
     change = []
@@ -48,8 +42,10 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         altparams.append(params[len(change)])
         change.append(0)
 
-
-
+    # print(params)
+    # print(altparams)
+    # print(change)
+    # print(gens_to_repop)
 
     # random.sample(range(max), k) returns a list of k unique numbers between 0 and max
     indexes_to_remove = random.sample(range(total_members), num_to_remove)
@@ -82,19 +78,23 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         # selection
         if i == gens_to_repop - 1:
             # this line resolves rounding errors by setting the total size to total_members on the last iteration
-            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=total_members)
+            children = GAops.selection(new_pop, points, int(altparams[0]), altparams[1], size=total_members - len(new_pop)) 
         else:   
-            new_pop = GAops.selection(population, points, int(altparams[0]), altparams[1], size=len(new_pop) + add_per_gen)
+            children = GAops.selection(new_pop, points, int(altparams[0]), altparams[1], size=add_per_gen)
     
         # crossover
-        GAops.crossover(new_pop, altparams[2])
+        GAops.crossover(children, altparams[2])
 
         # mutation
-        GAops.mutate_bits(new_pop, altparams[3])
+        GAops.mutate_bits(children, altparams[3])
+
+        # adding new members to the population
+        for indiv in children:
+            new_pop.append(individual(indiv.get_value_list()))
 
         for i in range(4):
             altparams[i] += change[i]
-
+        
     return new_pop
 
 

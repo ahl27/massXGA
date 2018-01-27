@@ -8,11 +8,12 @@ UNIFORM_XOVER_P_VAL = 0.2
 def selection(population, points, k, p, size=-1):
     #k is the tournament size
     #p is the probability that the highest fitness individual will be selected
-    if size == -1:
-    	size = len(population)
     newPopulation = []
 
-    newPopulation.append(individual(population[0].get_value_list()))
+    if size == -1:
+        size = len(population)
+        newPopulation.append(individual(population[0].get_value_list()))
+
 
     while len(newPopulation) < size:
         #random.sample will pick unique numbers from the range specified

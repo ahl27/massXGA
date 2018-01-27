@@ -93,7 +93,7 @@ def graph_pop(points, population):
     #plot = plot + scale_x_continuous(limits=(start[0], stop[0])) + \
     #        scale_y_continuous(limits=(start[1], stop[1]))
     #this brings up the plot
-    plot.show()
+    #plot.show()
 
 
 if __name__ == '__main__':

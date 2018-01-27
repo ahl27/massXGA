@@ -1,16 +1,16 @@
-#first draft of GA algorithm for function optimization using penalty functions and mass extinct
-#this algorithm is based around the function
-#f(x) = gx^4 + fx^3 + ex^2 + dx + csin(x) + bcos(x) + a
-#NUM_VALs will alter what the exact function is, as described below
+# first draft of GA algorithm for function optimization using penalty functions and mass extinct
+# this algorithm is based around the function
+# f(x) = gx^4 + fx^3 + ex^2 + dx + csin(x) + bcos(x) + a
+# NUM_VALs will alter what the exact function is, as described below
 
-#supporting module imports
+# supporting module imports
 import GAops
 import GAgraphing
 import extinction
 from GAindiv import individual
 
 
-#standard python library imports
+# standard python library imports
 import pickle
 import os
 import math
@@ -32,7 +32,7 @@ CONST_BITS = 7                                  # number of bits in each value o
 CONST_NUM_POINTS = 20                           # number of random points to generate between each critical point
                                                 # (see initialize_points())
 CROSSOVER_RATE = 0.80                           # rate of crossover
-MUTATION_BITS_RATE = 0.01                       # rate of mutation
+MUTATION_BITS_RATE = 0.02                       # rate of mutation
 TOURNAMENT_SIZE = 3                             # tournament size
 TOURNAMENT_PROBABILITY = 0.75                   # probability most fit individual wins in tournament
 NUM_VALS = 7                                    # determines the function--1 means just a, 2 means a,b,
@@ -354,7 +354,6 @@ def main():
     if subproc:
         run_subprocess_version(cmdpoints)
         return
-
 
     if use_checkpoint:
         # ask user if they actually wanted to open a file (just in case they did -c and didn't mean to)
