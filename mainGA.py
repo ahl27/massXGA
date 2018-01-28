@@ -237,7 +237,7 @@ def read_from_checkpoint(filepath):
 def run_subprocess_version(fname, fpath):
     global LAST_CHANGE
     global TOTAL_GENS
-    global constants
+    # global constants
 
     extinction_index = 0
 
@@ -357,6 +357,11 @@ def main():
         REPOP_RATE = int(consts[4])
         global ALTPARAMS
         ALTPARAMS = literal_eval(consts[5])
+        global constants
+        constants = [CONST_POPSIZE, CONST_BITS, CONST_RANDPERGEN, CONST_NUM_POINTS,
+                     CROSSOVER_RATE, MUTATION_BITS_RATE,
+                     TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY, NUM_VALS,
+                     TOTAL_GENS, EXTINCT_PERCENT, EXTINCT_INTERVAL, EXTINCT_LIST, REPOP_RATE, ALTPARAMS]
 
     # preparing the screen to show messagebox/filedialog
     if 'comet' not in platform.node():
