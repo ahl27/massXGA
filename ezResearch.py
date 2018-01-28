@@ -8,6 +8,7 @@ from datetime import datetime
 from time import time
 import os
 from functools import reduce
+from io import open
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,19 +31,35 @@ def main():
     #       EXTINCT_LIST
     #       REPOP_RATE
     #       ALTPARAMS
-    run_settings = ["7 0.50 0 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 5 '[]'",
-                    "7 0.50 5 '[5, 15, 25]' 10 '[]'", "7 0.50 5 '[5, 15, 25]' 20 '[]'",
-                    "7 0.50 10 '[5, 15, 25]' 1 '[]'", "7 0.50 10 '[5, 15, 25]' 5 '[]'",
-                    "7 0.50 10 '[5, 15, 25]' 10 '[]'", "7 0.50 10 '[5, 15, 25]' 20 '[]'",
-                    "7 0.50 20 '[5, 15, 25]' 1 '[]'", "7 0.50 20 '[5, 15, 25]' 5 '[]'",
-                    "7 0.50 20 '[5, 15, 25]' 10 '[]'", "7 0.50 20 '[5, 15, 25]' 20 '[]'",
-                    "7 0.50 50 '[5, 15, 25]' 1 '[]'", "7 0.50 50 '[5, 15, 25]' 5 '[]'",
-                    "7 0.50 50 '[5, 15, 25]' 10 '[]'", "7 0.50 50 '[5, 15, 25]' 20 '[]'"]
+    # run_settings = ["7 0.50 0 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 5 '[5, 15, 25]' 10 '[]'", "7 0.50 5 '[5, 15, 25]' 25 '[]'",
+    #                 "7 0.50 10 '[5, 15, 25]' 1 '[]'", "7 0.50 10 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 10 '[5, 15, 25]' 10 '[]'", "7 0.50 10 '[5, 15, 25]' 25 '[]'",
+    #                 "7 0.50 20 '[5, 15, 25]' 1 '[]'", "7 0.50 20 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 20 '[5, 15, 25]' 10 '[]'", "7 0.50 20 '[5, 15, 25]' 25 '[]'",
+    #                 "7 0.50 50 '[5, 15, 25]' 1 '[]'", "7 0.50 50 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 50 '[5, 15, 25]' 10 '[]'", "7 0.50 50 '[5, 15, 25]' 25 '[]'"]
+    # run_settings = ["7 0.50 0 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 1 '[]'", "7 0.50 5 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 5 '[5, 15, 25]' 10 '[]'",
+    #                 "7 0.50 10 '[5, 15, 25]' 1 '[]'", "7 0.50 10 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 10 '[5, 15, 25]' 10 '[]'",
+    #                 "7 0.50 20 '[5, 15, 25]' 1 '[]'", "7 0.50 20 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 20 '[5, 15, 25]' 10 '[]'",
+    #                 "7 0.50 50 '[5, 15, 25]' 1 '[]'", "7 0.50 50 '[5, 15, 25]' 5 '[]'",
+    #                 "7 0.50 50 '[5, 15, 25]' 10 '[]'"]
+    run_settings = ["7 0.250 0 '[5, 15, 25]' 1 '[]'", "7 0.250 5 '[5, 15, 25]' 1 '[]'", "7 0.250 5 '[5, 15, 25]' 5 '[]'",
+                    "7 0.250 5 '[5, 15, 25]' 10 '[]'",
+                    "7 0.250 10 '[5, 15, 25]' 1 '[]'", "7 0.250 10 '[5, 15, 25]' 5 '[]'",
+                    "7 0.250 10 '[5, 15, 25]' 10 '[]'",
+                    "7 0.250 20 '[5, 15, 25]' 1 '[]'", "7 0.250 20 '[5, 15, 25]' 5 '[]'",
+                    "7 0.250 20 '[5, 15, 25]' 10 '[]'",
+                    "7 0.250 50 '[5, 15, 25]' 1 '[]'", "7 0.250 50 '[5, 15, 25]' 5 '[]'",
+                    "7 0.250 50 '[5, 15, 25]' 10 '[]'"]
     # run_settings = [""]
 
     # make a call to mainGA.py for each set of settings above
     for settings in run_settings:
-        print (settings)
+        print ('\nSettings for this run: ' + settings)
         gensNear = []
         gensSuccess = []
         numgens = []
@@ -57,7 +74,7 @@ def main():
         # used for logging
         # file is automatically removed at end of this function
         if not os.path.exists('params.pickle'):
-            params_file = open('params.pickle', 'x')
+            params_file = open('params.pickle', 'w')
             params_file.close()
         else:
             print('Error - pickle file for parameters already exists.')
@@ -71,19 +88,24 @@ def main():
         if not os.path.exists('logs/{}/{}'.format(todays_date, run_time)):
             os.makedirs('logs/{}/{}'.format(todays_date, run_time))
 
+        if sys.version_info[0] < 3:
+            py_ver = "python"
+        else:
+            py_ver = "python3"
+
         # -s flag is for the settings being sent -- see above
         if len(settings) > 0:
-            command = "python3 mainGA.py --subprocess -p " + fname + " -s " + settings
+            command = py_ver + " mainGA.py --subprocess -p " + fname + " -s " + settings
         else:
-            command = "python3 mainGA.py --subprocess -p " + fname
+            command = py_ver + " mainGA.py --subprocess -p " + fname
 
         for i in range(iterations):
             process = pexpect.spawn(command)
-            process.expect("Enter the number of generations to iterate through: ")
+            process.expect("Enter the number of generations to iterate through: ", timeout=60)
             process.sendline(gens)
             #process.expect("Enter the number of generations to iterate through: ")
             #process.sendline("quit")
-            process.expect("Process Finished", timeout=120)
+            process.expect("Process Finished", timeout=300)
             data = (process.before).decode(sys.stdout.encoding)
             data = data.split()
 
@@ -124,7 +146,7 @@ def main():
         # read the constants and points
         params_file = open('params.pickle', 'rb')
         consts = pickle.load(params_file)
-        points = pickle.load(params_file)
+        # points = pickle.load(params_file)
 
         avg_fit = np.mean(fitnesses)
         avg_gens = np.mean(numgens)
@@ -133,13 +155,22 @@ def main():
 
         # write constants, generations, points, and data from each run to the csv file
         with open('logs/{}/{}.csv'.format(todays_date, run_time), 'a') as csv_file:
-            csv_file.write(', Points file: ' + fname + '\n\n')
-            csv_file.write(',' + str(consts) + '\n\n')
-            csv_file.write(',' + str(gens) + '\n\n')
-            # csv_file.write(',' + str(points) + '\n\n')
-            csv_file.write(', Avg fitness: {}  Trim fit: {}  Avg gens: {}  Avg solns: {}\n\n'.format(avg_fit, trim_avg_fit, avg_gens, avg_solns))
-            for i in range(len(solutions)):
-                csv_file.write(',{0:.3f},{1},{2},{3}\n'.format(float(fitnesses[i]), numgens[i], solutions[i], indivs[i]))
+            if sys.version_info[0] < 3:
+                csv_file.write(unicode(', Points file: ' + fname + '\n\n'))
+                csv_file.write(unicode(',' + str(consts) + '\n\n'))
+                csv_file.write(unicode(',' + str(gens) + '\n\n'))
+                # csv_file.write(',' + str(points) + '\n\n')
+                csv_file.write(unicode(', Avg fitness: {}  Trim fit: {}  Avg gens: {}  Avg solns: {}\n\n'.format(avg_fit, trim_avg_fit, avg_gens, avg_solns)))
+                for i in range(len(solutions)):
+                    csv_file.write(unicode(',{0:.3f},{1},{2},{3}\n'.format(float(fitnesses[i]), numgens[i], solutions[i], indivs[i])))
+            else:
+                csv_file.write(', Points file: ' + fname + '\n\n')
+                csv_file.write(',' + str(consts) + '\n\n')
+                csv_file.write(',' + str(gens) + '\n\n')
+                # csv_file.write(',' + str(points) + '\n\n')
+                csv_file.write(', Avg fitness: {}  Trim fit: {}  Avg gens: {}  Avg solns: {}\n\n'.format(avg_fit, trim_avg_fit, avg_gens, avg_solns))
+                for i in range(len(solutions)):
+                    csv_file.write(',{0:.3f},{1},{2},{3}\n'.format(float(fitnesses[i]), numgens[i], solutions[i], indivs[i]))
 
         if len(gensNear) > 0:
             avgNear = reduce(lambda x, y: x + y, gensNear) / float(len(gensNear))

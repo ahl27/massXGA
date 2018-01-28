@@ -4,10 +4,11 @@ from GAindiv import *
 
 UNIFORM_XOVER_P_VAL = 0.2
 
-#selecting members from the population to be parents for the next generation
+# selecting members from the population to be parents for the next generation
 def selection(population, points, k, p, size=-1):
-    #k is the tournament size
-    #p is the probability that the highest fitness individual will be selected
+    # k is the tournament size
+    # p is the probability that the highest fitness individual will be selected
+
     newPopulation = []
 
     if size == -1:
@@ -16,7 +17,7 @@ def selection(population, points, k, p, size=-1):
 
 
     while len(newPopulation) < size:
-        #random.sample will pick unique numbers from the range specified
+        # random.sample will pick unique numbers from the range specified
         indices = random.sample(range(size), k)
         contestants = []
 
@@ -26,17 +27,17 @@ def selection(population, points, k, p, size=-1):
             continue
         '''
 
-        #select contestants
+        # select contestants
         for index in indices:
             contestants.append(population[index])
 
-        #sort based on fitness, best fitness to worst
+        # sort based on fitness, best fitness to worst
         contestants.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
 
-        #random roll, 0-1
+        # random roll, 0-1
         roll = random.random()
 
-        #this loop will select an individual based on the roll
+        # this loop will select an individual based on the roll
         rate = 0
         i = 0
         while i < (k-1) and i >= 0:
@@ -48,17 +49,17 @@ def selection(population, points, k, p, size=-1):
             else:
                 i+=1
 
-        #if we didn't select an individual, the last one will be selected
+        # if we didn't select an individual, the last one will be selected
         if i > 0:
             newPopulation.append(individual(contestants[i].get_value_list()))
 
+    assert len(newPopulation) == size
     return newPopulation
 
 
-
-#crossover between two individuals in population
+# crossover between two individuals in population
 def crossover(population, rate):
-    for i in range(math.floor(len(population)/2)):
+    for i in range(int(len(population)/2)):
         roll = random.random()
 
         if roll > rate:
@@ -67,12 +68,12 @@ def crossover(population, rate):
         parent1 = population[2*i]
         parent2 = population[2*i+1]
 
-        #making the complete genome (bitstring) for each parent
+        # making the complete genome (bitstring) for each parent
         genome1 = parent1.get_bitstring()
         genome2 = parent2.get_bitstring()
 
-        #pick a random point to cross over
-        #to switch between two point and uniform, (un)comment the first ''' and (un)comment the third '''
+        # pick a random point to cross over
+        # to switch between two point and uniform, (un)comment the first ''' and (un)comment the third '''
 
         '''
 
@@ -90,7 +91,7 @@ def crossover(population, rate):
 
         '''
 
-        #uniform crossover
+        # uniform crossover
         MASK_PROB = UNIFORM_XOVER_P_VAL
         base_mask = '0' * len(genome1)
         mask = ''
@@ -107,19 +108,19 @@ def crossover(population, rate):
             newGenome1 += genome1[i] if mask[i] == '0' else genome2[i]
             newGenome2 += genome2[i] if mask[i] == '0' else genome1[i]
 
-        #'''
+        # '''
 
-        #set the new values of the individuals
+        # set the new values of the individuals
         parent1.set_bitstring(newGenome1)
         parent2.set_bitstring(newGenome2)
 
 
-#mutates the bits of individuals in the population
+# mutates the bits of individuals in the population
 def mutate_bits(population, rate):
     mutations = 0
 
-    #iterates through the bitstrings for each individual and generates a number between 0 and 1 for each
-    #if the number is less than rate, the bit is flipped (0 to 1 or 1 to 0)
+    # iterates through the bitstrings for each individual and generates a number between 0 and 1 for each
+    # if the number is less than rate, the bit is flipped (0 to 1 or 1 to 0)
     for individual in population:
         bitstring = individual.get_bitstring()
 
@@ -138,5 +139,5 @@ def mutate_bits(population, rate):
 
 
 #TODO: mass extinction
-#def extinct():
+# def extinct():
 

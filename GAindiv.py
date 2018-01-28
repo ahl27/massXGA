@@ -15,7 +15,7 @@ class individual():
         num_vars = len(self.values)
 
         newList = []
-        section = math.floor(length/num_vars)
+        section = int(length/num_vars)
         for i in range(num_vars):
             newList.append(bitstring[i*section : (1+i)*section])
 

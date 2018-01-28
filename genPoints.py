@@ -5,7 +5,6 @@ import re
 import random
 from ast import literal_eval
 
-
 random.seed()
 
 def get_y(dct, x, sp, cp):
@@ -182,7 +181,7 @@ def main():
         fname = fname + fname2
 
 
-    pickle.dump(points, open(fname + '.pickle', 'wb'))
+    pickle.dump(points, open(fname + '.pickle', 'wb'), protocol=2)
 
             
 def randomize(critPoints):
@@ -213,7 +212,6 @@ def randomize(critPoints):
     #sort points in the list by x value
     points.sort(key = lambda point: point[0])
     return points
-
 
 
 

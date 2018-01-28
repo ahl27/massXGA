@@ -5,7 +5,7 @@
 
 # supporting module imports
 import GAops
-import GAgraphing
+# import GAgraphing
 import extinction
 from GAindiv import individual
 
@@ -21,6 +21,7 @@ from tkinter import messagebox
 import random
 from ast import literal_eval
 from copy import deepcopy
+from io import open
 
 random.seed()
 
@@ -33,7 +34,7 @@ CONST_NUM_POINTS = 20                           # number of random points to gen
                                                 # (see initialize_points())
 CROSSOVER_RATE = 0.80                           # rate of crossover
 MUTATION_BITS_RATE = 0.02                       # rate of mutation
-TOURNAMENT_SIZE = 3                             # tournament size
+TOURNAMENT_SIZE = 2                             # tournament size
 TOURNAMENT_PROBABILITY = 0.75                   # probability most fit individual wins in tournament
 NUM_VALS = 7                                    # determines the function--1 means just a, 2 means a,b,
                                                 # 3 means a,b,c, etc.
@@ -192,7 +193,7 @@ def save_point(population, points, fname=''):
         fname = 'checkpoint_' + str(TOTAL_GENS) + '.pickle'
 
     # dump into a pickle file
-    pickle.dump(data, open(fname, 'wb'))
+    pickle.dump(data, open(fname, 'wb'), protocol=2)
 
 
 # This function loads a previously saved state
@@ -246,8 +247,8 @@ def run_subprocess_version(fname):
     if os.path.exists('params.pickle'):
         if os.path.getsize('params.pickle') == 0:
             params_file = open('params.pickle', 'wb')
-            pickle.dump(constants, params_file)
-            pickle.dump(points, params_file)
+            pickle.dump(constants, params_file, protocol=2)
+            # pickle.dump(points, params_file)
             params_file.close()
 
     # file to store the set of unique solutions
@@ -293,7 +294,7 @@ def run_subprocess_version(fname):
 
     # write the set of unique solutions to the pickle file
     # this is unpickled and processed in ezResearch
-    pickle.dump(solutions, solns_file)
+    pickle.dump(solutions, solns_file, protocol=2)
     solns_file.close()
 
     vals = bestMember.get_values()

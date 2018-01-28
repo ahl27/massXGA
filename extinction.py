@@ -92,9 +92,10 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
         for indiv in children:
             new_pop.append(individual(indiv.get_value_list()))
 
-        for i in range(4):
-            altparams[i] += change[i]
-        
+        for j in range(4):
+            altparams[j] += change[j]
+
+    assert len(new_pop) == total_members
     return new_pop
 
 
