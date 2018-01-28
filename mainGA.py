@@ -234,7 +234,7 @@ def read_from_checkpoint(filepath):
 # This is basically a slimmed-down version of main() with no error checking or print statements,
 # except for the ones the script calling this script relies upon.
 # This method is only used for scripts calling this as a subprocess; see main() for comments
-def run_subprocess_version(fname):
+def run_subprocess_version(fname, fpath):
     global LAST_CHANGE
     global TOTAL_GENS
     global constants
@@ -246,16 +246,16 @@ def run_subprocess_version(fname):
     # open the logging pickle file if it exists and has 0 length
     # the 0 length check ensures these dumps are not repeated for each call to this function
     # constants and points are written to the file
-    if os.path.exists('params.pickle'):
-        if os.path.getsize('params.pickle') == 0:
-            params_file = open('params.pickle', 'wb')
+    if os.path.exists(fpath + '/params.pickle'):
+        if os.path.getsize(fpath + '/params.pickle') == 0:
+            params_file = open(fpath + '/params.pickle', 'wb')
             pickle.dump(constants, params_file, protocol=2)
             # pickle.dump(points, params_file)
             params_file.close()
 
     # file to store the set of unique solutions
     # in ezResearch, this information is written to a text file
-    solns_file = open('solns.pickle', 'wb')
+    solns_file = open(fpath + '/solns.pickle', 'wb')
 
     population = []
 
@@ -322,6 +322,8 @@ def main():
         help="[Flag] Continue from existing checkpoint", action="store_true")
     parser.add_argument("-p", "--points", 
         help="[String] Read in pickle file containing set of points", default='')
+    parser.add_argument("-f", "--path",
+        help="Path for logging and temporary files.", default=os.getcwd())
     parser.add_argument("-s", "--settings", nargs=6,
         help="[List] Possibly empty list of settings for global constant values", default=[])
     parser.add_argument("--subprocess", action="store_true",
@@ -329,6 +331,7 @@ def main():
     args = parser.parse_args()
     use_checkpoint = args.checkpoint
     cmdpoints = args.points
+    filepath = args.path
     checkpoint = False
     # these are the settings for NUM_VALS, EXTINCT_PERCENT, EXTINCT_INTERVAL, EXTINCT_LIST, REPOP_RATE, ALTPARAMS
     consts = args.settings
@@ -356,7 +359,7 @@ def main():
         root.withdraw()
 
     if subproc:
-        run_subprocess_version(cmdpoints)
+        run_subprocess_version(cmdpoints, filepath)
         return
 
     if use_checkpoint:

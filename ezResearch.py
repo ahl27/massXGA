@@ -23,6 +23,10 @@ def main():
     iterations = args.iterations
     gens = args.generations
 
+    # make sure logs file exists
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
+
     # List of sets of settings to use for multiple runs.  Empty string uses values defined in mainGA
     # Each string contains 6 values:
     #       NUM_VALS
@@ -70,23 +74,23 @@ def main():
         todays_date = datetime.fromtimestamp(time()).strftime('%Y-%m-%d')
         run_time = datetime.fromtimestamp(time()).strftime('%H-%M-%S')
 
+        # create directories for logging if they don't already exist
+        if not os.path.exists('logs/{}'.format(todays_date)):
+            os.makedirs('logs/{}'.format(todays_date))
+        if not os.path.exists('logs/{}/{}'.format(todays_date, run_time + '-' + str(os.getpid()))):
+            os.makedirs('logs/{}/{}'.format(todays_date, run_time + '-' + str(os.getpid())))
+
+        filepath = 'logs/{}/{}'.format(todays_date, run_time + '-' + str(os.getpid()))
+
         # create the file for pickling the constants and points in mainGA.py
         # used for logging
         # file is automatically removed at end of this function
-        if not os.path.exists('params.pickle'):
-            params_file = open('params.pickle', 'w')
+        if not os.path.exists(filepath + '/params.pickle'):
+            params_file = open(filepath + '/params.pickle', 'w')
             params_file.close()
         else:
             print('Error - pickle file for parameters already exists.')
             return
-
-        # create directories for logging if they don't already exist
-        if not os.path.exists('logs'):
-            os.makedirs('logs')
-        if not os.path.exists('logs/{}'.format(todays_date)):
-            os.makedirs('logs/{}'.format(todays_date))
-        if not os.path.exists('logs/{}/{}'.format(todays_date, run_time)):
-            os.makedirs('logs/{}/{}'.format(todays_date, run_time))
 
         if sys.version_info[0] < 3:
             py_ver = "python"
@@ -95,9 +99,9 @@ def main():
 
         # -s flag is for the settings being sent -- see above
         if len(settings) > 0:
-            command = py_ver + " mainGA.py --subprocess -p " + fname + " -s " + settings
+            command = py_ver + " mainGA.py --subprocess -p " + fname + " -f " + filepath + " -s " + settings
         else:
-            command = py_ver + " mainGA.py --subprocess -p " + fname
+            command = py_ver + " mainGA.py --subprocess -p " + fname + " -f " + filepath
 
         for i in range(iterations):
             process = pexpect.spawn(command)
@@ -127,7 +131,7 @@ def main():
             indivs.append(data[4])
 
             # read unique solutions from pickle file created in mainGA
-            os.rename('solns.pickle', 'logs/{}/{}/{}.pickle'.format(todays_date, run_time, 'Run' + str(i)))
+            os.rename(filepath + '/solns.pickle', filepath + '/Run' + str(i))
             # solns_file = open('solns.pickle', 'rb')
             # solution_set = pickle.load(solns_file)
             # solns_file.close()
@@ -144,7 +148,7 @@ def main():
 
         # open the logging pickle file for reading
         # read the constants and points
-        params_file = open('params.pickle', 'rb')
+        params_file = open(filepath + '/params.pickle', 'rb')
         consts = pickle.load(params_file)
         # points = pickle.load(params_file)
 
@@ -154,7 +158,7 @@ def main():
         trim_avg_fit = stats.trim_mean(fitnesses, 0.05, axis=None)
 
         # write constants, generations, points, and data from each run to the csv file
-        with open('logs/{}/{}.csv'.format(todays_date, run_time), 'a') as csv_file:
+        with open('logs/{}/{}/{}.csv'.format(todays_date, run_time + '-' + str(os.getpid()), 'results'), 'a') as csv_file:
             if sys.version_info[0] < 3:
                 csv_file.write(unicode(', Points file: ' + fname + '\n\n'))
                 csv_file.write(unicode(',' + str(consts) + '\n\n'))
@@ -194,8 +198,8 @@ def main():
         print("Average generations for perfect success: " + str(avgSuccess))
 
         # delete the pickle file used for logging
-        if os.path.exists('params.pickle'):
-            os.remove('params.pickle')
+        if os.path.exists(filepath + '/params.pickle'):
+            os.remove(filepath + '/params.pickle')
 
 if __name__ == '__main__':
     main()
