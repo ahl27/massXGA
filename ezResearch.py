@@ -110,24 +110,27 @@ def main():
             #process.expect("Enter the number of generations to iterate through: ")
             #process.sendline("quit")
             process.expect("Process Finished", timeout=300)
-            data = (process.before).decode(sys.stdout.encoding)
-            data = data.split()
+            # data = (process.before).decode(sys.stdout.encoding)
+            # data = data.split()
 
             print("\nIteration " + str(i+1) + " Complete!")
+            returns_file = open(filepath + '/returns_file.pickle', 'rb')
+            data = pickle.load(returns_file)
+            returns_file.close()
             if data[1] == '0.0':
                 print("Best fitness: 0.0 [Perfect!]")
             else:
-                print("Best fitness: " + data[1])
+                print("Best fitness: " + str(data[1]))
             print("Best member: " + data[4])
-            print("Generations to produce: " + data[2])
-            print("Number of unique solutions: " + data[3])
-            if float(data[1]) <= 5.:
-                gensNear.append(int(data[2]))
-            if float(data[1]) == 0.:
-                gensSuccess.append(int(data[2]))
-            numgens.append(int(data[2]))
-            fitnesses.append(float(data[1]))
-            solutions.append(int(data[3]))
+            print("Generations to produce: " + str(data[2]))
+            print("Number of unique solutions: " + str(data[3]))
+            if data[1] <= 5.:
+                gensNear.append(data[2])
+            if data[1] == 0.:
+                gensSuccess.append(data[2])
+            numgens.append(data[2])
+            fitnesses.append(data[1])
+            solutions.append(data[3])
             indivs.append(data[4])
 
             # read unique solutions from pickle file created in mainGA
@@ -150,6 +153,7 @@ def main():
         # read the constants and points
         params_file = open(filepath + '/params.pickle', 'rb')
         consts = pickle.load(params_file)
+        params_file.close()
         # points = pickle.load(params_file)
 
         avg_fit = np.mean(fitnesses)
@@ -200,6 +204,9 @@ def main():
         # delete the pickle file used for logging
         if os.path.exists(filepath + '/params.pickle'):
             os.remove(filepath + '/params.pickle')
+
+        if os.path.exists(filepath + '/returns_file.pickle'):
+            os.remove(filepath + '/returns_file.pickle')
 
 if __name__ == '__main__':
     main()

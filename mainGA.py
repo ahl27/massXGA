@@ -304,10 +304,15 @@ def run_subprocess_version(fname, fpath):
     for i in range(1, len(vals)):
         best_genome = best_genome + "," + str(vals[i])
 
-    print(bestFitness)
-    print(LAST_CHANGE)
-    print(len(solutions))
-    print(best_genome)
+    returns = [None, bestFitness, LAST_CHANGE, len(solutions), best_genome]
+    returns_file = open(fpath + '/returns_file.pickle', 'wb')
+    pickle.dump(returns, returns_file, protocol=2)
+    returns_file.close()
+
+    # print(bestFitness)
+    # print(LAST_CHANGE)
+    # print(len(solutions))
+    # print(best_genome)
     print("Process Finished")
 
 
