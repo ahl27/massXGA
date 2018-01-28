@@ -15,10 +15,10 @@ def selection(population, points, k, p, size=-1):
         size = len(population)
         newPopulation.append(individual(population[0].get_value_list()))
     
-    else if size < k:
-    	secondSelection = True
-    	newSize = size
-    	size = k
+    elif size < k:
+        secondSelection = True
+        newSize = size
+        size = k
 
 
     while len(newPopulation) < size:
@@ -59,11 +59,11 @@ def selection(population, points, k, p, size=-1):
             newPopulation.append(individual(contestants[i].get_value_list()))
 
     if secondSelection:
-    	indices = random.sample(range(size), newSize)
-    	newNewPop = []
-    	for i in range(len(indices)):
-    		newNewPop.append(individual(newPopulation[indices[i]].get_value_list()))
-    	newPopulation = newNewPop
+        indices = random.sample(range(size), newSize)
+        newNewPop = []
+        for i in range(len(indices)):
+            newNewPop.append(individual(newPopulation[indices[i]].get_value_list()))
+        newPopulation = newNewPop
 
     #assert len(newPopulation) == size
     return newPopulation

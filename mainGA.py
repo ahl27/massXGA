@@ -11,13 +11,15 @@ from GAindiv import individual
 
 
 # standard python library imports
+import platform
 import pickle
 import os
 import math
 import argparse
-import tkinter as tk
-from tkinter import filedialog
-from tkinter import messagebox
+if 'comet' not in platform.node():
+    import tkinter as tk
+    from tkinter import filedialog
+    from tkinter import messagebox
 import random
 from ast import literal_eval
 from copy import deepcopy
@@ -34,7 +36,7 @@ CONST_NUM_POINTS = 20                           # number of random points to gen
                                                 # (see initialize_points())
 CROSSOVER_RATE = 0.80                           # rate of crossover
 MUTATION_BITS_RATE = 0.02                       # rate of mutation
-TOURNAMENT_SIZE = 2                             # tournament size
+TOURNAMENT_SIZE = 3                             # tournament size
 TOURNAMENT_PROBABILITY = 0.75                   # probability most fit individual wins in tournament
 NUM_VALS = 7                                    # determines the function--1 means just a, 2 means a,b,
                                                 # 3 means a,b,c, etc.
@@ -349,8 +351,9 @@ def main():
         ALTPARAMS = literal_eval(consts[5])
 
     # preparing the screen to show messagebox/filedialog
-    root = tk.Tk()
-    root.withdraw()
+    if 'comet' not in platform.node():
+        root = tk.Tk()
+        root.withdraw()
 
     if subproc:
         run_subprocess_version(cmdpoints)
