@@ -5,7 +5,7 @@
 
 # supporting module imports
 import GAops
-# import GAgraphing
+import GAgraphing
 import extinction
 from GAindiv import individual
 
@@ -43,7 +43,7 @@ NUM_VALS = 7                                    # determines the function--1 mea
                                                 # NUM_VALS = 7 for longest function possible:
                                                 # f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a
 
-EXTINCT_PERCENT = 0.5           # expressed as a decimal, 0.50 = 50% will die
+EXTINCT_PERCENT = 0.6           # expressed as a decimal, 0.50 = 50% will die
 EXTINCT_INTERVAL = 25           # generations between each extinction, so every 10 generations it'll trigger an event
 EXTINCT_LIST = [10, 25, 50]     # list of gens for extinction events (events occur at multiples of last value)
                                 # mutually exclusive with EXTINCT_INTERVAL
