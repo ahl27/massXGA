@@ -53,7 +53,7 @@ class individual():
         #mas = [0, 0, 0, 0, 0, 0, 0]
 
         #different way with period evolution
-        #ex^2 + dx + csin(gx) + bcos(fx) + a
+        #gx^2 + dx + csin(fx) + bcos(ex) + a
         mas = [0, 1, 1, 0, 0, 0, 0]
         j = 0
         for i in range(len(mas)):
@@ -64,7 +64,7 @@ class individual():
         #modify code here to use mas[] values
 
         #mas[3] = (mas[3] / (2**6))*10
-
+        
         for point in points:
             x = point[0]
             obsY = point[1]

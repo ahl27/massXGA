@@ -7,6 +7,7 @@
 import GAops
 import GAgraphing
 import extinction
+from rVal import calculate_rsqd
 from GAindiv import individual
 
 
@@ -31,7 +32,7 @@ random.seed()
 CONST_POPSIZE = 100                             # size of population
 CONST_RANDPERGEN = (int)(0.5 * CONST_POPSIZE)   # random individuals to add per generation
                                                 # note that this is not used, though it may be implemented later
-CONST_BITS = 7                                  # number of bits in each value of each individual
+CONST_BITS = 9                                  # number of bits in each value of each individual
 CONST_NUM_POINTS = 20                           # number of random points to generate between each critical point
                                                 # (see initialize_points())
 CROSSOVER_RATE = 0.80                           # rate of crossover
@@ -43,7 +44,7 @@ NUM_VALS = 7                                    # determines the function--1 mea
                                                 # NUM_VALS = 7 for longest function possible:
                                                 # f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a
 
-EXTINCT_PERCENT = 0.6           # expressed as a decimal, 0.50 = 50% will die
+EXTINCT_PERCENT = 0.5           # expressed as a decimal, 0.50 = 50% will die
 EXTINCT_INTERVAL = 25           # generations between each extinction, so every 10 generations it'll trigger an event
 EXTINCT_LIST = [10, 25, 50]     # list of gens for extinction events (events occur at multiples of last value)
                                 # mutually exclusive with EXTINCT_INTERVAL
@@ -66,6 +67,7 @@ LAST_CHANGE = 0
 
 # counter reporting the number of mutations per generation
 num_mutations = 0
+total_fitness = 0
 
 
 def get_rates():
@@ -129,6 +131,9 @@ def initialize_points():
 def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
     global num_mutations
     global LAST_CHANGE
+    global total_fitness
+
+    #test_print(population)
 
     # selection
     newPop = GAops.selection(population, points, TOURNAMENT_SIZE, TOURNAMENT_PROBABILITY)
@@ -148,6 +153,7 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
 
     # sorting population by fitness (best to worst)
     newPop.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
+    total_fitness += newPop[0].calculate_fitness(points)
 
     # check if there's a new best individual
     if newPop[0].calculate_fitness(points) < bestFit:
@@ -162,6 +168,8 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
         print("GENERATION " + str(TOTAL_GENS + 1))
         print("\nNumber of mutations: " + str(num_mutations))
         print("Best this gen: " + str(newPop[0].calculate_fitness(points)))
+        if (TOTAL_GENS > 0):
+            print("Average best fitness: " + str(total_fitness / TOTAL_GENS))
         print("\nLast change in fitness: Generation " + str(LAST_CHANGE))
         print("Best Fitness Overall: " + str(bestFit))
         print("=" * 60 + "\n")
@@ -516,6 +524,7 @@ def main():
                 TOTAL_GENS += 1
             GAgraphing.graph_pop(points, population)
             print("Number of solutions seen: {0}".format(len(solutions)))
+            print("R-squared value: " + str(calculate_rsqd(CONST_POPSIZE, bestFitness, points)))
 
     # gives users one last chance to save
     '''
