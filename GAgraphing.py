@@ -22,13 +22,13 @@ def frange(start, stop, step):
         i += step
 
 
-def convert_to_df(points):
+def convert_to_df(points, cols = ['x', 'y']):
     newPoints = copy.deepcopy(points)
 
     for i in range(len(newPoints)):
         newPoints[i] = (i, [newPoints[i][0], newPoints[i][1]])
 
-    newDF = pd.DataFrame.from_items(newPoints, orient='index', columns=['x', 'y'])
+    newDF = pd.DataFrame.from_items(newPoints, orient='index', columns=cols)
     
     return newDF
 
@@ -96,11 +96,11 @@ def graph_pop(points, population):
     plot.show()
 
 def graph_avgs(data):
-    pointsDF = convert_to_df(data)
-    plot = ggplot(aes(x='x', y='y'), data=pointsDF) + geom_point(color='blue')
+    pointsDF = convert_to_df(data, ['Generation', 'Average Fitness'])
+    plot = ggplot(aes(x='Generation', y='Average Fitness'), data=pointsDF) + geom_point(color='blue') + geom_line(color='black')
 
-    plot = plot + scale_x_continuous(limits=(pointsDF['x'].min(), pointsDF['x'].max())) + \
-        scale_y_continuous(limits=(pointsDF['y'].min(), pointsDF['y'].max()))
+    plot = plot + scale_x_continuous(limits=(pointsDF['Generation'].min(), pointsDF['Generation'].max())) + \
+        scale_y_continuous(limits=(pointsDF['Average Fitness'].min(), pointsDF['Average Fitness'].max()))
     plot.show()
 
 if __name__ == '__main__':
