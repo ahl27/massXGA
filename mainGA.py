@@ -5,7 +5,7 @@
 
 # supporting module imports
 import GAops
-import GAgraphing
+# import GAgraphing
 import extinction
 from GAindiv import individual
 
@@ -31,7 +31,7 @@ random.seed()
 CONST_POPSIZE = 100                             # size of population
 CONST_RANDPERGEN = (int)(0.5 * CONST_POPSIZE)   # random individuals to add per generation
                                                 # note that this is not used, though it may be implemented later
-CONST_BITS = 7                                  # number of bits in each value of each individual
+CONST_BITS = 9                                  # number of bits in each value of each individual
 CONST_NUM_POINTS = 20                           # number of random points to generate between each critical point
                                                 # (see initialize_points())
 CROSSOVER_RATE = 0.80                           # rate of crossover
@@ -43,7 +43,7 @@ NUM_VALS = 7                                    # determines the function--1 mea
                                                 # NUM_VALS = 7 for longest function possible:
                                                 # f(x) = gx^2 + dx + csin(fx) + bcos(ex) + a
 
-EXTINCT_PERCENT = 0.6           # expressed as a decimal, 0.50 = 50% will die
+EXTINCT_PERCENT = 0.5           # expressed as a decimal, 0.50 = 50% will die
 EXTINCT_INTERVAL = 25           # generations between each extinction, so every 10 generations it'll trigger an event
 EXTINCT_LIST = [10, 25, 50]     # list of gens for extinction events (events occur at multiples of last value)
                                 # mutually exclusive with EXTINCT_INTERVAL
@@ -141,10 +141,12 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
     num_mutations += GAops.mutate_bits(newPop, MUTATION_BITS_RATE)
 
     # extinction
-    newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
-        EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
-    # newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
-    #         EXTINCT_LIST[ext_index], gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
+    if len(EXTINCT_LIST) == 0:
+        newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
+                                    EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
+    else:
+        newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
+                                    EXTINCT_LIST[ext_index], gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
 
     # sorting population by fitness (best to worst)
     newPop.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
@@ -267,11 +269,11 @@ def run_subprocess_version(fname, fpath):
         member = individual(memberVals)
         population.append(member)
 
-        # solutions is the set of solutions seen
-        # put genomes in the set so that we can count unique genomes seen
-        solutions = set()
-        for memb in population:
-            solutions.add(tuple(memb.values))
+    # solutions is the set of solutions seen
+    # put genomes in the set so that we can count unique genomes seen
+    solutions = set()
+    for memb in population:
+        solutions.add(tuple(memb.values))
 
     population.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
     bestFitness = population[0].calculate_fitness(points)
