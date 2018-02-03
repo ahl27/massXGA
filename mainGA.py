@@ -5,7 +5,7 @@
 
 # supporting module imports
 import GAops
-import GAgraphing
+# import GAgraphing
 import extinction
 from rVal import calculate_rsqd
 from GAindiv import individual
@@ -146,10 +146,12 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
     num_mutations += GAops.mutate_bits(newPop, MUTATION_BITS_RATE)
 
     # extinction
-    newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
-        EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
-    # newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
-    #         EXTINCT_LIST[ext_index], gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
+    if len(EXTINCT_LIST) == 0:
+        newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
+                                    EXTINCT_INTERVAL, gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
+    else:
+        newPop = extinction.extinct(newPop, points, EXTINCT_PERCENT, TOTAL_GENS,
+                                    EXTINCT_LIST[ext_index], gens_to_repop=REPOP_RATE, altparams=ALTPARAMS)
 
     # sorting population by fitness (best to worst)
     newPop.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
@@ -275,11 +277,11 @@ def run_subprocess_version(fname, fpath):
         member = individual(memberVals)
         population.append(member)
 
-        # solutions is the set of solutions seen
-        # put genomes in the set so that we can count unique genomes seen
-        solutions = set()
-        for memb in population:
-            solutions.add(tuple(memb.values))
+    # solutions is the set of solutions seen
+    # put genomes in the set so that we can count unique genomes seen
+    solutions = set()
+    for memb in population:
+        solutions.add(tuple(memb.values))
 
     population.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
     bestFitness = population[0].calculate_fitness(points)

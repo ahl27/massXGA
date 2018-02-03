@@ -36,7 +36,7 @@ def extinct(population, points, percent_to_kill, total_gens, interval, gens_to_r
     # this list will hold the change in each parameter per generation
     change = []
     for i in range(len(altparams)):
-        change.append((params[i] - altparams[i])/gens_to_repop)
+        change.append(float((params[i] - altparams[i]))/gens_to_repop)
 
     while len(change) < 4:
         altparams.append(params[len(change)])
