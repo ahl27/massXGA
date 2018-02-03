@@ -5,7 +5,7 @@
 
 # supporting module imports
 import GAops
-# import GAgraphing
+import GAgraphing
 import extinction
 from rVal import calculate_rsqd
 from GAindiv import individual
@@ -68,6 +68,7 @@ LAST_CHANGE = 0
 # counter reporting the number of mutations per generation
 num_mutations = 0
 total_fitness = 0
+avgs = []
 
 
 def get_rates():
@@ -132,6 +133,7 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
     global num_mutations
     global LAST_CHANGE
     global total_fitness
+    global avgs
 
     #test_print(population)
 
@@ -157,6 +159,11 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
     newPop.sort(key=lambda indiv: indiv.calculate_fitness(points), reverse=False)
     total_fitness += newPop[0].calculate_fitness(points)
 
+    avg_fit = 0
+    for indiv in population:
+        avg_fit += indiv.calculate_fitness(points)
+    avg_fit = avg_fit / CONST_POPSIZE
+
     # check if there's a new best individual
     if newPop[0].calculate_fitness(points) < bestFit:
         bestFit = newPop[0].calculate_fitness(points)
@@ -170,11 +177,13 @@ def iterate(population, points, bestFit, bestMemb, subproc=False, ext_index=0):
         print("GENERATION " + str(TOTAL_GENS + 1))
         print("\nNumber of mutations: " + str(num_mutations))
         print("Best this gen: " + str(newPop[0].calculate_fitness(points)))
-        if (TOTAL_GENS > 0):
-            print("Average best fitness: " + str(total_fitness / TOTAL_GENS))
+        #if (TOTAL_GENS > 0):
+            #print("Average best fitness: " + str(total_fitness / TOTAL_GENS))
+        print("Average fitness: " + str(avg_fit))
         print("\nLast change in fitness: Generation " + str(LAST_CHANGE))
         print("Best Fitness Overall: " + str(bestFit))
         print("=" * 60 + "\n")
+        avgs.append((TOTAL_GENS, avg_fit / 10000))
 
     return newPop, bestFit, bestMemb
 
@@ -495,6 +504,9 @@ def main():
         # testing
         elif ipt == 'print':
             test_print(population)
+
+        elif ipt == 'graph':
+            GAgraphing.graph_avgs(avgs)
 
         # error checking
         elif ipt.isdigit() == False and ipt != '':

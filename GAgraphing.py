@@ -95,6 +95,13 @@ def graph_pop(points, population):
     #this brings up the plot
     plot.show()
 
+def graph_avgs(data):
+    pointsDF = convert_to_df(data)
+    plot = ggplot(aes(x='x', y='y'), data=pointsDF) + geom_point(color='blue')
+
+    plot = plot + scale_x_continuous(limits=(pointsDF['x'].min(), pointsDF['x'].max())) + \
+        scale_y_continuous(limits=(pointsDF['y'].min(), pointsDF['y'].max()))
+    plot.show()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
